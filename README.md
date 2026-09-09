@@ -1,2 +1,5 @@
-# projeto_bps_waldinei
-Dashboard de compras públicas de saúde - BPS 2020-2026
+# Projeto BPS — Banco de Preços em Saúde
+
+**Aluno:** Waldinei Lameira Rosa
+**Turma:** Visualização de Dados e Business Intelligence — Turma 2 (T2)
+**Módulo:** Módulo 2 — Mini-Projeto Avaliativo (Semana 06/07)
