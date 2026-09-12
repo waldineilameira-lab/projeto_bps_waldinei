@@ -220,4 +220,4 @@ __marimo__/
 # Dados brutos e processados (grandes demais para o Git, reproduzíveis via notebook)
 data/raw/*.csv
 data/processed/*.csv
-
+!data/processed/BPS_20_26_Waldinei.zip
