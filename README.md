@@ -42,8 +42,8 @@ O arquivo `BPS_20_26_Waldinei.csv` não está versionado neste repositório por 
 
 | KPI | Fórmula | Observação |
 |---|---|---|
-| Valor total registrado | Soma de `vl_preco_total` | — |
-| Quantidade total de itens comprados | Soma de `qt_medicamento` | — |
+| Valor total registrado | Soma de `vl_preco_total` | Soma bruta, sem segmentação — base para os filtros do dashboard |
+| Quantidade total de itens comprados | Soma de `qt_medicamento` | Soma bruta entre unidades de medida distintas (comprimido, mililitro, grama etc.) — não deve ser interpretada como itens fisicamente equivalentes entre si |
 | Número de registros de compra | Contagem de linhas | Após aplicação dos filtros |
 | Instituições compradoras | Contagem distinta de `cnpj_instituicao` | CNPJ usado em vez do nome para evitar inflação por variações de grafia |
 | Fornecedores | Contagem distinta de `cnpj_fornecedor` | Mesma lógica acima |
