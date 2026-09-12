@@ -38,3 +38,21 @@ O arquivo `BPS_20_26_Waldinei.csv` não está versionado neste repositório por 
 - **367.003 linhas**, 37 colunas (36 originais + `ano_arquivo_origem` para rastreabilidade)
 - Distribuição por ano: 2020 (84.919) · 2021 (85.007) · 2022 (89.534) · 2023 (33.785) · 2024 (28.745) · 2025 (34.010) · 2026 (11.003 — ano parcial)
 
+## KPIs e métricas do dashboard
+
+| KPI | Fórmula | Observação |
+|---|---|---|
+| Valor total registrado | Soma de `vl_preco_total` | — |
+| Quantidade total de itens comprados | Soma de `qt_medicamento` | — |
+| Número de registros de compra | Contagem de linhas | Após aplicação dos filtros |
+| Instituições compradoras | Contagem distinta de `cnpj_instituicao` | CNPJ usado em vez do nome para evitar inflação por variações de grafia |
+| Fornecedores | Contagem distinta de `cnpj_fornecedor` | Mesma lógica acima |
+| Preço unitário médio ponderado | `SUM(vl_preco_total) / SUM(qt_medicamento)` | **Nunca calculado como média de `vl_preco_unitario`** — essa abordagem distorceria o resultado ao dar peso igual a compras de tamanhos muito diferentes. Deve ser interpretado com cautela quando os filtros incluírem produtos, unidades de fornecimento ou apresentações distintas. |
+
+## Limitações identificadas
+
+- Um pequeno grupo de registros (31 de 367.003, 0,008% das linhas) concentra 12,3% da quantidade total comprada — em sua maioria medicamentos de alto consumo no SUS, consistentes com compras centralizadas de grande escala. Não há evidência suficiente de erro de digitação para justificar exclusão, mas o preço unitário médio ponderado é sensível a essa concentração (variação de 11% com/sem esses registros).
+- 90 registros (0,11%) não possuem classificação de PDM/Grupo/Classe, concentrados 100% no tipo de compra `ADMINISTRATIVA`.
+- `dt_insercao` pode ocorrer anos após `dt_compra` (até 6 anos de defasagem observada); toda análise temporal do dashboard usa `dt_compra`.
+- O arquivo de 2026 é parcial (cobertura até meados do ano).
+
