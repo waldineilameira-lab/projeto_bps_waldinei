@@ -4,6 +4,24 @@
 **Turma:** Visualização de Dados e Business Intelligence — Turma 2 (T2)
 **Módulo:** Módulo 2 — Mini-Projeto Avaliativo (Semana 06/07)
 
+## O Dashboard
+
+O dashboard foi desenvolvido em Power BI e está organizado em 3 páginas:
+
+- **Visão Executiva** — 6 cartões de KPI, gráfico de evolução anual do valor total de
+  compras (2020–2026) e gráfico combinado (colunas + linha) de Modalidade de Compra
+  vs. Preço Médio Ponderado.
+- **Rankings & Fornecedores** — 4 gráficos de Top 10: Estados, Instituições,
+  Fornecedores e Medicamentos, com slicers sincronizados de Ano, UF e Modalidade.
+- **Fabricantes** — Top 10 Fabricantes por valor total, complementando a análise de
+  Fornecedores com a perspectiva da indústria produtora.
+
+![Visão Executiva](docs/img/visao-executiva.png)
+![Rankings & Fornecedores](docs/img/rankings-fornecedores.png)
+![Fabricantes](docs/img/fabricantes.png)
+
+Arquivo: `dashboard/Projeto_BPS_Waldinei.pbix`
+
 ## Perguntas de negócio
 
 Este dashboard foi desenvolvido para responder às seguintes questões:
@@ -56,12 +74,157 @@ O arquivo `BPS_20_26_Waldinei.csv` não está versionado neste repositório por 
 - `dt_insercao` pode ocorrer anos após `dt_compra` (até 6 anos de defasagem observada); toda análise temporal do dashboard usa `dt_compra`.
 - O arquivo de 2026 é parcial (cobertura até meados do ano).
 
-## Sprint 5 — Investigação de Qualidade de Dados
+## Pergunta 1 — Evolução Anual do Valor Total de Compras
 
-Durante a análise de dispersão de preços (Pergunta de Negócio 5), identificamos que
-aproximadamente 57% do Valor Total Registrado original (R$ 115.063.593.346,89) provinha
-de registros com preço unitário anormal — 50x ou mais acima da mediana do próprio item
-(mesmo código CATMAT).
+| Ano | Valor Total | % do Valor Total | Variação vs. ano anterior |
+|---|---:|---:|---:|
+| 2020 | R$ 3.929.679.666,48 | 7,97% | — |
+| 2021 | R$ 6.629.843.278,67 | 13,44% | +68,73% |
+| 2022 | R$ 16.668.364.241,77 | 33,81% | +151,41% |
+| 2023 | R$ 3.335.064.693,87 | 6,76% | −79,99% |
+| 2024 | R$ 5.591.396.199,32 | 11,34% | +67,67% |
+| 2025 | R$ 9.550.129.553,19 | 19,37% | +70,80% |
+| 2026* | R$ 3.601.471.471,68 | 7,30% | −62,29% |
+
+\* Ano parcial (cobertura até meados de 2026) — a queda em relação a 2025 não é
+diretamente comparável por conta da base de meses incompleta.
+
+**Interpretação:**
+
+- **2022 é o ano de maior valor total por larga margem** (33,8% de todo o período
+  acumulado, mais que o dobro de 2021), seguido por uma **queda abrupta de quase 80%
+  em 2023**. Esse padrão coincide com a distribuição de registros por ano descrita
+  na seção "Resultado da consolidação" (89.534 registros em 2022 contra apenas
+  33.785 em 2023) — ou seja, a queda no valor acompanha uma queda proporcional no
+  volume de compras, e não uma mudança isolada de preço médio.
+- Vale investigar se a queda de 2023–2024 reflete uma redução real de compras
+  públicas de medicamentos, ou se é um problema de cobertura/completude dos dados
+  do BPS nesses anos específicos. O padrão de recuperação em 2025 (quase voltando
+  ao patamar de 2021) sugere que pode ser algo pontual, mas essa é uma hipótese, não
+  uma conclusão validada pelos dados disponíveis.
+
+## Pergunta 2 — Estados e Instituições com Maior Volume Financeiro
+
+**Top 5 Estados (UF):**
+
+| UF | Valor Total | % do Valor Total |
+|---|---:|---:|
+| SP | R$ 22.651.314.321,39 | 45,94% |
+| PR | R$ 6.012.891.101,58 | 12,19% |
+| CE | R$ 5.386.776.727,30 | 10,92% |
+| RS | R$ 2.506.861.045,03 | 5,08% |
+| SC | R$ 1.940.563.461,67 | 3,94% |
+
+**Top 5 Instituições:**
+
+| Instituição (CNPJ) | Valor Total | % do Valor Total |
+|---|---:|---:|
+| Secretaria de Estado da Saúde — Coordenadoria de Assistência Farmacêutica (SP) (46.374.500/0262-31) | R$ 20.054.821.185,04 | 40,68% |
+| Secretaria da Saúde do Estado do Ceará (07.954.571/0001-04) | R$ 5.347.707.049,44 | 10,85% |
+| Secretaria de Estado da Saúde do Paraná (76.416.866/0001-40) | R$ 2.440.396.821,59 | 4,95% |
+| Consórcio Intermunicipal Catarinense — CIMCATARINA (12.075.748/0001-32) | R$ 1.751.900.693,89 | 3,55% |
+| Fundo Estadual de Saúde do Paraná — FUNSAUDE (08.597.121/0001-74) | R$ 1.699.810.925,25 | 3,45% |
+
+**Interpretação:**
+
+- **São Paulo concentra quase metade do valor total** (45,94%), praticamente 4x mais
+  que o segundo colocado (Paraná, 12,19%). Os Top 10 estados somam 91,05% do valor
+  total registrado — uma concentração bastante alta, indicando que a maior parte das
+  compras do BPS está concentrada em poucos estados, provavelmente os de maior
+  população e rede de saúde.
+- **A instituição líder concentra sozinha 40,68% de todo o valor nacional**: a
+  Coordenadoria de Assistência Farmacêutica da Secretaria de Estado da Saúde de São
+  Paulo, explicando diretamente a liderança do estado de SP no ranking acima.
+- **O Paraná aparece duas vezes entre as Top 5 instituições** sob CNPJs diferentes
+  (Secretaria de Estado da Saúde e Fundo Estadual de Saúde — FUNSAUDE), somando
+  R$ 4,14 bilhões combinados — o que ajuda a explicar por que o estado lidera o
+  ranking de UFs com folga sobre o 3º colocado.
+
+**Nota metodológica — inconsistências de nome nos dois sentidos:**
+
+Ao comparar o ranking agrupado por `cnpj_instituicao` (identificador único) com o
+mesmo ranking agrupado por `no_instituicao` (nome textual), encontramos evidência dos
+dois lados do mesmo problema de qualidade de dados:
+
+1. **Nomes idênticos para instituições diferentes** — São Paulo e Paraná têm CNPJs
+   distintos, mas ambos estão cadastrados na fonte simplesmente como
+   "SECRETARIA DE ESTADO DA SAUDE", sem identificação do estado. Agrupar por nome
+   funde as duas em uma única linha, inflando o resultado (R$ 23,50 bi vs. R$ 20,05 bi
+   do maior CNPJ isolado — uma diferença de R$ 3,44 bi).
+2. **Nomes diferentes para a mesma instituição** — o Consórcio Intermunicipal
+   Catarinense (CNPJ 12.075.748/0001-32) aparece sob duas grafias distintas na fonte
+   ("CONSORCIO INTERMUNICIPAL CATARINENSE-CIMCATARINA" e "CONSORCIO INTERFEDERATIVO
+   SANTA CATARINA - CINCATARINA"), dividindo o mesmo valor total (R$ 1,75 bi) em duas
+   linhas menores quando agrupado por nome.
+
+Esses dois achados, em direções opostas, reforçam a decisão já documentada na seção
+"Tratamentos e transformações realizadas" de usar CNPJ (e não nome) como chave de
+agrupamento para instituições e fornecedores — qualquer um dos dois erros, sozinho,
+já seria suficiente para distorcer um ranking por valor.
+
+## Pergunta 3 — Validação: Agrupamento por CATMAT vs. Descrição
+
+Antes de consolidar o Top 10 de Medicamentos, validamos se agrupar por código CATMAT
+(`co_catmat`) produzia resultado diferente de agrupar pela descrição textual (`ds_item`),
+já usada no dashboard. Confirmamos que **nenhum CATMAT possui mais de uma descrição
+distinta** em todo o dataset (367.003 registros), e o Top 10 por ambos os métodos é
+idêntico. Isso valida que o gráfico "Top 10 Medicamentos" do dashboard responde
+corretamente à Pergunta 3, sem risco de fragmentação de valor por inconsistência de
+cadastro.
+
+## Pergunta 4 — Fornecedores e Fabricantes
+
+**Top 5 Fornecedores** (distribuidores que efetivamente vendem ao poder público, já
+no dashboard):
+
+| Fornecedor | Valor Total | % do Valor Total |
+|---|---:|---:|
+| Onco Prod Distribuidora de Produtos Hospitalares e Oncológicos LTDA. | R$ 3.085.985.128,61 | 6,26% |
+| Novartis Biociências SA | R$ 2.592.946.282,22 | 5,26% |
+| AstraZeneca do Brasil LTDA. | R$ 1.695.594.121,87 | 3,44% |
+| Janssen-Cilag Farmacêutica LTDA | R$ 1.327.448.972,74 | 2,69% |
+| CM Hospitalar S.A. | R$ 1.166.753.094,70 | 2,37% |
+
+Além do Top 10 Fornecedores, analisamos separadamente o **Top 10 Fabricantes**
+(indústria que produz o medicamento/dispositivo), criado em página nova ("Fabricantes")
+do dashboard:
+
+| Fabricante | Valor Total | Registros | % do Valor Total |
+|---|---:|---:|---:|
+| Novartis Biociências SA | R$ 3.919.206.000 | 4.266 | 7,95% |
+| Janssen-Cilag Farmacêutica LTDA | R$ 2.079.847.000 | 865 | 4,22% |
+| AstraZeneca do Brasil LTDA. | R$ 1.857.312.000 | 1.622 | 3,77% |
+| Sanofi Medley Farmacêutica LTDA | R$ 1.585.869.000 | 4.013 | 3,22% |
+| Aché Laboratórios Farmacêuticos SA | R$ 1.576.320.000 | 4.281 | 3,20% |
+| Cristália Produtos Químicos Farmacêuticos LTDA | R$ 1.538.333.000 | 22.397 | 3,12% |
+| EMS S/A | R$ 1.519.386.000 | 18.438 | 3,08% |
+| Boehringer Ingelheim do Brasil Química e Farmacêutica LTDA. | R$ 1.486.342.000 | 2.050 | 3,01% |
+| Prati, Donaduzzi & Cia LTDA | R$ 1.463.806.000 | 24.260 | 2,97% |
+| GlaxoSmithKline Brasil LTDA | R$ 1.391.008.000 | 1.609 | 2,82% |
+
+**Interpretação:**
+
+- A concentração entre **fornecedores** é bem menor que entre instituições ou
+  estados: os Top 5 somam apenas 20,02% do valor total, contra 40,68% de uma única
+  instituição na Pergunta 2. Isso reflete um mercado de distribuição mais
+  pulverizado — centenas de distribuidoras e laboratórios diferentes competem pelo
+  fornecimento.
+- **Novartis Biociências aparece tanto entre os fornecedores quanto entre os
+  fabricantes** (7,95% do valor como fabricante), o que sugere venda direta ao
+  poder público em parte dos casos, sem intermediação de distribuidora.
+- Os 10 maiores **fabricantes** concentram 37,35% do valor total — concentração
+  moderada, menos extrema que a observada entre instituições e fornecedores.
+- **Cristália e Prati-Donaduzzi** aparecem com 5-6x mais registros que a Novartis mas
+  valor total similar ou menor, indicando perfil de fabricantes de medicamentos
+  genéricos de alto volume e menor preço unitário — perfil de negócio distinto dentro
+  do mesmo ranking.
+
+## Pergunta 5 — Variação de Preço Unitário (e Correção de um Erro Sistemático)
+
+Durante a análise de dispersão de preços, identificamos que aproximadamente 57% do
+Valor Total Registrado original (R$ 115.063.593.346,89) provinha de registros com
+preço unitário anormal — 50x ou mais acima da mediana do próprio item (mesmo código
+CATMAT).
 
 **Diagnóstico:** ao comparar com os CSVs brutos da fonte, confirmamos que o erro já está
 presente nos dados originais publicados pelo Ministério da Saúde, não foi introduzido no
@@ -114,51 +277,8 @@ Administrativa/Judicial) identifica a modalidade de licitação de cada registro
 
 Durante a exploração dos dados, identificamos que o campo `tp_compra` (natureza da
 compra, distinto de `modalidade`) revela que **7,15% do valor total de compras**
-(aproximadamente R$ 3,5 bilhões, após correção de preços da Sprint 5) é movimentado
+(aproximadamente R$ 3,5 bilhões, após correção de preços da Pergunta 5) é movimentado
 por decisão **Judicial**, contra 92,85% por via **Administrativa** normal. Esse é um
 indicador relevante de judicialização da saúde no Brasil, tema amplamente debatido
 em políticas públicas de saúde, embora não fizesse parte das 6 perguntas de negócio
 originais do projeto.
-
-
-## Pergunta 3 — Validação: Agrupamento por CATMAT vs. Descrição
-
-Antes de consolidar o Top 10 de Medicamentos, validamos se agrupar por código CATMAT
-(`co_catmat`) produzia resultado diferente de agrupar pela descrição textual (`ds_item`),
-já usada no dashboard. Confirmamos que **nenhum CATMAT possui mais de uma descrição
-distinta** em todo o dataset (367.003 registros), e o Top 10 por ambos os métodos é
-idêntico. Isso valida que o gráfico "Top 10 Medicamentos" do dashboard responde
-corretamente à Pergunta 3, sem risco de fragmentação de valor por inconsistência de
-cadastro.
-
-
-## Pergunta 4 — Fornecedores e Fabricantes
-
-Além do Top 10 Fornecedores (distribuidores que efetivamente vendem ao poder público,
-já no dashboard), analisamos separadamente o Top 10 Fabricantes (indústria que produz
-o medicamento/dispositivo):
-
-| Fabricante | Valor Total | Registros | % do Valor Total |
-|---|---:|---:|---:|
-| Novartis Biociências SA | R$ 3.919.206.000 | 4.266 | 7,95% |
-| Janssen-Cilag Farmacêutica LTDA | R$ 2.079.847.000 | 865 | 4,22% |
-| AstraZeneca do Brasil LTDA. | R$ 1.857.312.000 | 1.622 | 3,77% |
-| Sanofi Medley Farmacêutica LTDA | R$ 1.585.869.000 | 4.013 | 3,22% |
-| Aché Laboratórios Farmacêuticos SA | R$ 1.576.320.000 | 4.281 | 3,20% |
-| Cristália Produtos Químicos Farmacêuticos LTDA | R$ 1.538.333.000 | 22.397 | 3,12% |
-| EMS S/A | R$ 1.519.386.000 | 18.438 | 3,08% |
-| Boehringer Ingelheim do Brasil Química e Farmacêutica LTDA. | R$ 1.486.342.000 | 2.050 | 3,01% |
-| Prati, Donaduzzi & Cia LTDA | R$ 1.463.806.000 | 24.260 | 2,97% |
-| GlaxoSmithKline Brasil LTDA | R$ 1.391.008.000 | 1.609 | 2,82% |
-
-**Interpretação:**
-
-- Os 10 maiores fabricantes concentram **37,35% do valor total**, uma concentração
-  moderada — menos extrema que a observada entre instituições e fornecedores.
-- **Novartis lidera em valor** (7,95%) com relativamente poucos registros (4.266),
-  sugerindo produtos de ticket unitário alto (biológicos/especialidades).
-- **Cristália e Prati-Donaduzzi** aparecem com 5-6x mais registros que a Novartis mas
-  valor total similar ou menor, indicando perfil de fabricantes de medicamentos
-  genéricos de alto volume e menor preço unitário — perfil de negócio distinto dentro
-  do mesmo ranking.
-  
