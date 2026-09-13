@@ -79,3 +79,86 @@ registros foram ajustados (1.812 registros, 0,49% do total em contagem — mas 5
 
 Metodologia completa disponível em `data/scripts/analise_precos_sprint5.ipynb`.
 
+## Pergunta 6 — Modalidade de Compra e Relação com o Preço
+
+O campo `modalidade` (distinto de `tp_compra`, que separa apenas natureza
+Administrativa/Judicial) identifica a modalidade de licitação de cada registro de compra.
+
+| Modalidade | Registros | Valor Total | Preço Médio Ponderado | % do Valor Total |
+|---|---:|---:|---:|---:|
+| Pregão | 332.087 | R$ 43.843.040.000 | R$ 0,7553 | 88,92% |
+| Registro de Preços | 18.007 | R$ 3.742.638.000 | R$ 0,7514 | 7,59% |
+| Dispensa de Licitação | 13.599 | R$ 1.634.571.000 | R$ 0,9441 | 3,32% |
+| Inexigibilidade de Licitação | 417 | R$ 66.140.540 | R$ 4,8392 | 0,13% |
+| Tomada de Preços | 1.864 | R$ 10.591.720 | R$ 0,7401 | 0,02% |
+| Concorrência | 710 | R$ 3.566.332 | R$ 0,5068 | 0,01% |
+| Concurso | 194 | R$ 2.637.446 | R$ 0,4997 | 0,01% |
+| Leilão | 54 | R$ 2.002.841 | R$ 0,2179 | 0,00% |
+| Convite | 70 | R$ 749.631 | R$ 7,1502 | 0,00% |
+| Diálogo Competitivo | 1 | R$ 15.228 | R$ 1,4100 | 0,00% |
+
+**Interpretação:**
+
+- **Pregão domina amplamente** (88,9% do valor total), o que é esperado — é a
+  modalidade padrão para compras públicas competitivas no Brasil.
+- **Dispensa de Licitação tem preço unitário ~25% maior** que Pregão (R$ 0,9441 vs.
+  R$ 0,7553), consistente com a expectativa de que processos menos competitivos
+  resultam em preços menos vantajosos para o poder público.
+- **Inexigibilidade de Licitação aparece com preço médio ~6,4x maior** que o Pregão.
+  Isso não deve ser interpretado como irregularidade: essa modalidade é usada
+  legalmente quando existe apenas um fornecedor possível (ex: medicamento
+  patenteado/exclusivo), então um preço mais alto pode ser genuíno e justificado
+  pela ausência de concorrência real, não necessariamente sobrepreço.
+
+## Achado Adicional — Judicialização da Saúde
+
+Durante a exploração dos dados, identificamos que o campo `tp_compra` (natureza da
+compra, distinto de `modalidade`) revela que **7,15% do valor total de compras**
+(aproximadamente R$ 3,5 bilhões, após correção de preços da Sprint 5) é movimentado
+por decisão **Judicial**, contra 92,85% por via **Administrativa** normal. Esse é um
+indicador relevante de judicialização da saúde no Brasil, tema amplamente debatido
+em políticas públicas de saúde, embora não fizesse parte das 6 perguntas de negócio
+originais do projeto.
+
+
+## Pergunta 3 — Validação: Agrupamento por CATMAT vs. Descrição
+
+Antes de consolidar o Top 10 de Medicamentos, validamos se agrupar por código CATMAT
+(`co_catmat`) produzia resultado diferente de agrupar pela descrição textual (`ds_item`),
+já usada no dashboard. Confirmamos que **nenhum CATMAT possui mais de uma descrição
+distinta** em todo o dataset (367.003 registros), e o Top 10 por ambos os métodos é
+idêntico. Isso valida que o gráfico "Top 10 Medicamentos" do dashboard responde
+corretamente à Pergunta 3, sem risco de fragmentação de valor por inconsistência de
+cadastro.
+
+
+## Pergunta 4 — Fornecedores e Fabricantes
+
+Além do Top 10 Fornecedores (distribuidores que efetivamente vendem ao poder público,
+já no dashboard), analisamos separadamente o Top 10 Fabricantes (indústria que produz
+o medicamento/dispositivo):
+
+| Fabricante | Valor Total | Registros | % do Valor Total |
+|---|---:|---:|---:|
+| Novartis Biociências SA | R$ 3.919.206.000 | 4.266 | 7,95% |
+| Janssen-Cilag Farmacêutica LTDA | R$ 2.079.847.000 | 865 | 4,22% |
+| AstraZeneca do Brasil LTDA. | R$ 1.857.312.000 | 1.622 | 3,77% |
+| Sanofi Medley Farmacêutica LTDA | R$ 1.585.869.000 | 4.013 | 3,22% |
+| Aché Laboratórios Farmacêuticos SA | R$ 1.576.320.000 | 4.281 | 3,20% |
+| Cristália Produtos Químicos Farmacêuticos LTDA | R$ 1.538.333.000 | 22.397 | 3,12% |
+| EMS S/A | R$ 1.519.386.000 | 18.438 | 3,08% |
+| Boehringer Ingelheim do Brasil Química e Farmacêutica LTDA. | R$ 1.486.342.000 | 2.050 | 3,01% |
+| Prati, Donaduzzi & Cia LTDA | R$ 1.463.806.000 | 24.260 | 2,97% |
+| GlaxoSmithKline Brasil LTDA | R$ 1.391.008.000 | 1.609 | 2,82% |
+
+**Interpretação:**
+
+- Os 10 maiores fabricantes concentram **37,35% do valor total**, uma concentração
+  moderada — menos extrema que a observada entre instituições e fornecedores.
+- **Novartis lidera em valor** (7,95%) com relativamente poucos registros (4.266),
+  sugerindo produtos de ticket unitário alto (biológicos/especialidades).
+- **Cristália e Prati-Donaduzzi** aparecem com 5-6x mais registros que a Novartis mas
+  valor total similar ou menor, indicando perfil de fabricantes de medicamentos
+  genéricos de alto volume e menor preço unitário — perfil de negócio distinto dentro
+  do mesmo ranking.
+  
