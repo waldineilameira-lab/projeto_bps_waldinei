@@ -56,3 +56,26 @@ O arquivo `BPS_20_26_Waldinei.csv` não está versionado neste repositório por 
 - `dt_insercao` pode ocorrer anos após `dt_compra` (até 6 anos de defasagem observada); toda análise temporal do dashboard usa `dt_compra`.
 - O arquivo de 2026 é parcial (cobertura até meados do ano).
 
+## Sprint 5 — Investigação de Qualidade de Dados
+
+Durante a análise de dispersão de preços (Pergunta de Negócio 5), identificamos que
+aproximadamente 57% do Valor Total Registrado original (R$ 115.063.593.346,89) provinha
+de registros com preço unitário anormal — 50x ou mais acima da mediana do próprio item
+(mesmo código CATMAT).
+
+**Diagnóstico:** ao comparar com os CSVs brutos da fonte, confirmamos que o erro já está
+presente nos dados originais publicados pelo Ministério da Saúde, não foi introduzido no
+nosso pipeline de preparação. O padrão identificado (98,9% dos casos concentrados em
+fatores de ~100x ou ~1.000x) é consistente com erro sistemático de casa decimal na
+publicação da fonte.
+
+**Correção aplicada:** para cada registro com razão de preço/mediana acima de 50x,
+dividimos o preço unitário pela potência de 10 correspondente à ordem de grandeza do erro.
+Os valores originais foram preservados nas colunas `vl_preco_unitario_bruto` e
+`vl_preco_total_bruto`, e uma coluna `flag_preco_corrigido` sinaliza quais dos 367.003
+registros foram ajustados (1.812 registros, 0,49% do total em contagem — mas 57% em valor).
+
+**Valor Total corrigido: R$ 49.305.949.104,98** (usado no dashboard a partir desta sprint).
+
+Metodologia completa disponível em `data/scripts/analise_precos_sprint5.ipynb`.
+
