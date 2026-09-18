@@ -4,6 +4,45 @@
 **Turma:** Visualização de Dados e Business Intelligence — Turma 2 (T2)
 **Módulo:** Módulo 2 — Mini-Projeto Avaliativo (Semana 06/07)
 
+## Objetivo do Projeto
+
+Desenvolver um dashboard analítico, em Power BI, para acompanhar as compras
+públicas de medicamentos e dispositivos médicos registradas no Banco de Preços
+em Saúde (BPS) entre 2020 e 2026, respondendo a seis perguntas de negócio sobre
+evolução de valores, concentração geográfica e institucional, produtos e
+fornecedores mais relevantes, variação de preços unitários e modalidades de
+compra utilizadas.
+
+## Contextualização do Problema
+
+A gestão de compras públicas de medicamentos envolve grande volume financeiro,
+múltiplos fornecedores, diferentes modalidades de aquisição e uma ampla
+variedade de produtos — o que dificulta o acompanhamento manual e a comparação
+de preços entre instituições, estados e períodos. O Banco de Preços em Saúde
+(BPS), mantido pelo Ministério da Saúde, disponibiliza publicamente esses
+registros de compra, mas em formato bruto, exigindo tratamento e consolidação
+antes de gerar informação útil para gestão. Este projeto transforma esses
+dados brutos em indicadores e visualizações que apoiam a comparação de preços,
+a identificação de padrões de gasto e — como mostrou a investigação da
+Pergunta 5 — até a detecção de erros na própria publicação dos dados pela
+fonte oficial.
+
+**Importante:** diferenças de preços identificadas neste projeto não devem ser
+interpretadas automaticamente como comprovação de economia, sobrepreço ou
+irregularidade. As variações podem estar relacionadas a fatores como
+fabricante, apresentação, unidade de fornecimento, quantidade adquirida,
+localidade, modalidade de compra, período e características específicas da
+negociação.
+
+## Fonte dos Dados
+
+Banco de Preços em Saúde (BPS), disponibilizado pelo Ministério da Saúde no
+Portal Brasileiro de Dados Abertos:
+https://dadosabertos.saude.gov.br/dataset/bps
+
+Dicionário de dados oficial:
+https://dadosabertos.saude.gov.br/dataset/bps/resource/0e76f527-5e7e-417d-9d0b-f46d00afb717
+
 ## O Dashboard
 
 O dashboard foi desenvolvido em Power BI e está organizado em 3 páginas:
@@ -21,6 +60,10 @@ O dashboard foi desenvolvido em Power BI e está organizado em 3 páginas:
 ![Fabricantes](docs/img/fabricantes.png)
 
 Arquivo: `dashboard/Projeto_BPS_Waldinei.pbix`
+
+## Vídeo de Apresentação
+
+[PREENCHER: link do vídeo no Loom, com compartilhamento "qualquer pessoa com o link"]
 
 ## Perguntas de negócio
 
@@ -51,6 +94,30 @@ O arquivo `BPS_20_26_Waldinei.csv` não está versionado neste repositório por 
 - **Duplicadas**: nenhuma encontrada em nenhum dos 7 anos, nem no dataset consolidado.
 - **Consolidação**: os 7 arquivos foram concatenados por empilhamento simples (`pd.concat`), já que a estrutura de colunas é idêntica em todos os anos (ver `docs/discrepancias_anos.md`). Validado que a soma de linhas por ano bate com o total consolidado (367.003 linhas), sem perdas, e que todas as linhas têm `ano_compra` coincidindo com o ano do arquivo de origem.
 
+## Descrição das Principais Colunas Utilizadas
+
+| Coluna | Descrição |
+|---|---|
+| `dt_compra` | Data da compra — usada como referência para toda análise temporal |
+| `dt_insercao` | Data de inserção do registro no sistema (metadado administrativo, pode ocorrer anos após `dt_compra`) |
+| `ano_compra` | Ano da compra |
+| `ano_arquivo_origem` | Ano do arquivo CSV de origem (coluna adicionada na consolidação, para rastreabilidade) |
+| `sg_uf` | Estado (UF) da instituição compradora |
+| `cnpj_instituicao` / `no_instituicao` | CNPJ e nome da instituição compradora |
+| `cnpj_fornecedor` / `no_fornecedor` | CNPJ e nome do fornecedor/distribuidor |
+| `no_fabricante` | Nome do fabricante do medicamento/dispositivo |
+| `co_catmat` | Código CATMAT — identificador único do item |
+| `ds_item` | Descrição textual do item (medicamento/dispositivo) |
+| `vl_preco_unitario` / `vl_preco_total` | Preço unitário e valor total pagos (já corrigidos — ver Pergunta 5) |
+| `vl_preco_unitario_bruto` / `vl_preco_total_bruto` | Valores originais, antes da correção do erro sistemático de preço |
+| `flag_preco_corrigido` | Sinaliza os registros ajustados na correção de preços da Sprint 5 |
+| `qt_medicamento` | Quantidade adquirida |
+| `modalidade` | Modalidade de compra/licitação (Pregão, Dispensa de Licitação, etc.) |
+| `tp_compra` | Natureza da compra (Administrativa ou Judicial) |
+| `nu_ata` | Número da ata de registro de preços, quando aplicável |
+| `co_pdm` / `co_grupo` / `co_classe` | Códigos de classificação do item (Padrão Descritivo de Materiais, Grupo, Classe) |
+| `registro_anvisa` | Número de registro do produto na ANVISA |
+
 ## Resultado da consolidação
 
 - **367.003 linhas**, 37 colunas (36 originais + `ano_arquivo_origem` para rastreabilidade)
@@ -73,6 +140,7 @@ O arquivo `BPS_20_26_Waldinei.csv` não está versionado neste repositório por 
 - 90 registros (0,11%) não possuem classificação de PDM/Grupo/Classe, concentrados 100% no tipo de compra `ADMINISTRATIVA`.
 - `dt_insercao` pode ocorrer anos após `dt_compra` (até 6 anos de defasagem observada); toda análise temporal do dashboard usa `dt_compra`.
 - O arquivo de 2026 é parcial (cobertura até meados do ano).
+- A base do BPS não permite granularidade municipal consistente — a análise geográfica deste projeto foi realizada no nível de estado (UF), não de município.
 
 ## Pergunta 1 — Evolução Anual do Valor Total de Compras
 
@@ -282,3 +350,34 @@ por decisão **Judicial**, contra 92,85% por via **Administrativa** normal. Esse
 indicador relevante de judicialização da saúde no Brasil, tema amplamente debatido
 em políticas públicas de saúde, embora não fizesse parte das 6 perguntas de negócio
 originais do projeto.
+
+## Recomendações Baseadas nos Dados
+
+- **Padronizar o cadastro de instituições por CNPJ, não por nome**, em sistemas
+  públicos de BI — este projeto encontrou instituições diferentes (SP e PR)
+  cadastradas com o nome idêntico "SECRETARIA DE ESTADO DA SAUDE", e uma mesma
+  instituição (Consórcio Catarinense) grafada de duas formas distintas.
+- **Auditar formalmente os registros de Inexigibilidade de Licitação**, não por
+  suspeita de irregularidade, mas para documentar a justificativa de
+  fornecedor único, já que essa modalidade apresentou preço médio ~6,4x maior
+  que o Pregão.
+- **Implementar validação automática de ordem de grandeza na publicação dos
+  dados do BPS**, já que 57% do valor total original decorria de um erro
+  sistemático de casa decimal presente na própria fonte oficial.
+- **Utilizar o preço médio ponderado por modalidade** (não só por produto) no
+  planejamento de compras via Dispensa de Licitação, que praticou preços ~25%
+  acima do Pregão.
+- **Monitorar continuamente o indicador de judicialização da saúde** (7,15% do
+  valor total de compras), dada sua relevância crescente em política pública.
+
+## Instruções para Reprodução do Projeto
+
+1. Clone este repositório.
+2. Baixe os 7 CSVs brutos do BPS (2020–2026) conforme a seção "Como reproduzir o
+   dataset consolidado" acima e salve em `data/raw/`.
+3. Execute `data/scripts/preparacao_bps.ipynb` para gerar o dataset consolidado.
+4. Execute `data/scripts/kpis_bps.ipynb` e `data/scripts/analise_precos_sprint5.ipynb`
+   para reproduzir os KPIs e a correção de preços.
+5. Abra `dashboard/Projeto_BPS_Waldinei.pbix` no Power BI Desktop (necessário
+   instalação prévia) e atualize a fonte de dados apontando para o CSV consolidado
+   gerado no passo 3.
